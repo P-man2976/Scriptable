@@ -3,16 +3,18 @@
 // icon-color: blue; icon-glyph: code;
 const widgetSize = config.widgetFamily;
 
+let fm = FileManager.local();
+const iCloudInUse = fm.isFileStoredIniCloud(module.filename);
+fm = iCloudInUse ? FileManager.iCloud() : fm;
+
 // このスクリプトの名前を設定してください。
-const fileName = module.filename;
+const fileName = fm.fileName(module.filename);
 
 const codeUrl = "https://raw.githubusercontent.com/P-man2976/Scriptable/master/Timetable-widget.js";
 
 async function downloadCode(filename, url) {
 	try {
-		let fm = FileManager.local();
-		const iCloudInUse = fm.isFileStoredIniCloud(module.filename);
-		fm = iCloudInUse ? FileManager.iCloud() : fm;
+		
 		const codeString = await new Request(url).loadString();
 		if (codeString.indexOf("// Variables used by Scriptable.") < 0) {
 			return false;
