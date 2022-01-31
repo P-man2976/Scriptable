@@ -4,9 +4,9 @@
 const widgetSize = config.widgetFamily;
 
 // このスクリプトの名前を設定してください。
-const fileName = "Timetable-Dev Widget";
+const fileName = module.filename;
 
-const codeUrl = "https://raw.githubusercontent.com/P-man2976/Gist-repo/master/Scriptable/Timetable-Dev%20Widget.js?token=GHSAT0AAAAAABNAMQUPZZI2FJFTMGB4LALSYPXJMTQ";
+const codeUrl = "https://raw.githubusercontent.com/P-man2976/Scriptable/master/Timetable-widget.js";
 
 async function downloadCode(filename, url) {
 	try {
