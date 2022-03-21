@@ -35,7 +35,7 @@ if (!fm.fileExists(fm.joinPath(settingsDirectory, "settings.json"))) {
 			class: null
 		},
 		preference: {
-			theme: "flex"
+			theme: "Flex"
 		},
 		notification: {
 			isEnabled: false,
