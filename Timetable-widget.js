@@ -32,7 +32,8 @@ if (!fm.fileExists(fm.joinPath(settingsDirectory, "settings.json"))) {
 		},
 		general: {
 			grade: null,
-			class: null
+			class: null,
+			course: null,
 		},
 		preference: {
 			theme: "Flex"
@@ -275,11 +276,11 @@ async function generateUiTable(title, subtitle, options, height, showSeparators 
 	}
 }
 
-async function fetchAPI(endpoint, reqGrade, reqClass) {
+async function fetchAPI(endpoint, reqGrade, reqClass, reqCourse) {
 	
 	try {
 		if(Keychain.contains("TIMETABLE_API_KEY")) {
-			const req = new Request(encodeURI(`https://pman2976.f5.si:19302${endpoint}?grade=${reqGrade}&class=${reqClass}&key=${Keychain.get("TIMETABLE_API_KEY")}`));
+			const req = new Request(encodeURI(`https://pman2976.f5.si:19302${endpoint}?grade=${reqGrade}&class=${reqClass}&course=${reqCourse}&key=${Keychain.get("TIMETABLE_API_KEY")}`));
 			req.timeoutInterval = 5;
 			return await req.loadString();
 		} else {
@@ -933,7 +934,7 @@ async function createNewSmallWidget(refreshInterval) {
 		
 		const startTime = ['8:45~', '9:50~', '10:55~', '12:00~', '13:40~', '14:45~', '15:45~', '放課後'];
 		
-		const timetable = JSON.parse(await fetchAPI("/api/timetable/v1.1/now", generalSettings.general.grade, generalSettings.general.class));
+		const timetable = JSON.parse(await fetchAPI("/api/timetable/v1.1/now", generalSettings.general.grade, generalSettings.general.class, generalSettings.general.course));
 		const widget = new ListWidget();
 		widget.backgroundColor = Color.dynamic(Color.white(), new Color("#121212"));
 		widget.setPadding(16, 16, 16, 16);
@@ -1388,6 +1389,83 @@ const initSettingOptions = [
 				await saveSettings(generalSettings);
 			} catch(error) {
 				await generateAlert("エラー", `エラーが発生しました。\n${error}`);
+			}
+		}
+	},
+	{
+		title: "コース",
+		description: "コースを選択します。",
+		currentValue: async function () {
+			
+			switch (generalSettings.general.course) {
+				case "libA":
+					return "文系A";
+					break;
+				case "libB":
+					return "文系B";
+					break;
+				case "libC":
+					return "文系C";
+					break;
+				case "libZ":
+					return "文系Z";
+					break;
+				case "sciD":
+					return "理系D";
+					break;
+				case "sciE":
+					return "理系E";
+					break;
+				case "sciX":
+					return "理系X";
+					break;
+				case "sciY":
+					return "理系Y";
+					break;
+				default:
+					return "未設定";
+					break;
+			}
+		},
+		onSelect: async function () {
+			try {
+				const options = ["文系A", "文系B", "文系C", "文系Z", "理系D", "理系E", "理系X", "理系Y"]
+				const selectedValue = await generateAlert (
+					"コースを選択",
+					"ウィジェットに表示するコースを選択してください",
+					options,
+				);
+				let course;
+				switch (selectedValue) {
+					case 0:
+						course = "libA"
+						break;
+					case 1:
+						course = "libB"
+						break;
+					case 2:
+						course = "libC"
+						break;
+					case 3:
+						course = "libZ"
+						break;
+					case 4:
+						course = "sciD"
+						break;
+					case 5:
+						course = "sciE"
+						break;
+					case 6:
+						course = "sciX"
+						break;
+					case 7:
+						course = "sciY"
+						break;
+				}
+				generalSettings.general.course = course;
+				await saveSettings(generalSettings);
+			} catch(error) {
+				
 			}
 		}
 	}
@@ -1960,7 +2038,7 @@ if (config.runsInWidget) {
 					{
 						title: "バージョン情報",
 						description: "",
-						currentValue: "1.0.0",
+						currentValue: "0.0.2",
 						onSelect: async () => {
 							if (eEC === 4) {
 								try {
